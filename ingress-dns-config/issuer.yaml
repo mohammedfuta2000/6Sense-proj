@@ -1,0 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-nginx
+  namespace: backend
+spec:
+  # ACME issuer configuration
+  acme:
+    email: mohammedfuta2000@gmail.com
+    server: https://acme-v02.api.letsencrypt.org/directory # the URL used to access the ACME server's directory endpoint
+    privateKeySecretRef:
+      name: letsencrypt-nginx-private-key
+    solvers:
+      # Use the HTTP-01 challenge provider
+      - http01:
+          ingress:
+            class: nginx

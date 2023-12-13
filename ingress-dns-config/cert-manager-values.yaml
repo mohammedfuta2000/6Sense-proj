@@ -1,0 +1,4 @@
+installCRDs: false
+# Required only if you want to monitor cert-manager activity
+prometheus:
+  enabled: false

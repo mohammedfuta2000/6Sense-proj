@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backend-argo-application
+  namespace: argocd
+spec:
+  project: default #leave this
+  source:
+    repoURL: https://github.com/mohammedfuta2000/6Sense-project.git
+    targetRevision: HEAD #get the latest commit
+    path: argocd-app-config # to track a specific path in the repo
+  destination: 
+    server: https://kubernetes.default.svc # leave this
+    namespace: backend
+
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    # automated configured argocd to poll the git repo every 3 mins. u can also configure a webhook if necessary
+    automated:
+      selfHeal: true
+      prune: true
