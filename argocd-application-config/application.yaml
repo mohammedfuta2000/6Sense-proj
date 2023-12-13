@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default #leave this
   source:
-    repoURL: https://github.com/mohammedfuta2000/6Sense-project.git
+    repoURL: https://github.com/mohammedfuta2000/6Sense-proj.git
     targetRevision: HEAD #get the latest commit
-    path: argocd-app-config # to track a specific path in the repo
+    path: argocd-application-config # to track a specific path in the repo
   destination: 
     server: https://kubernetes.default.svc # leave this
     namespace: backend
