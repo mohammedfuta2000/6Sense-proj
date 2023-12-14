@@ -45,5 +45,5 @@ spec:
               service:
                 name: myapp-service 
                 port:
-                  name: https
+                  number: 80
   ingressClassName: nginx

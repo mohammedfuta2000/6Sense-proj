@@ -4,10 +4,10 @@ metadata:
   name: myapp-service
   namespace: backend
 spec:
-  selector:
+  selector: 
     app: myapp 
   ports:
-  - port: 8080
+  - port: 80
     protocol: TCP
     targetPort: 8080
   
