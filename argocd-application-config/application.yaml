@@ -9,7 +9,7 @@ spec:
     namespace: backend
     server: 'https://kubernetes.default.svc'
   source:
-    path: argocd-application-config
+    path: argocd-application-config/dev
     repoURL: 'git@github.com:mohammedfuta2000/6Sense-proj.git'
     targetRevision: HEAD
   sources: []
