@@ -4,19 +4,49 @@ metadata:
   name: backend-argo-application
   namespace: argocd
 spec:
-  project: default #leave this
-  source:
-    repoURL: https://github.com/mohammedfuta2000/6Sense-proj.git
-    targetRevision: HEAD #get the latest commit
-    path: argocd-application-config # to track a specific path in the repo
-  destination: 
-    server: https://kubernetes.default.svc # leave this
+  destination:
+    name: ''
     namespace: backend
-
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: argocd-application-config
+    repoURL: 'git@github.com:mohammedfuta2000/6Sense-proj.git'
+    targetRevision: HEAD
+  sources: []
+  project: default
   syncPolicy:
     syncOptions:
-    - CreateNamespace=true
-    # automated configured argocd to poll the git repo every 3 mins. u can also configure a webhook if necessary
+      - CreateNamespace=true
     automated:
       selfHeal: true
       prune: true
+
+
+
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: backend-argo-application
+#   namespace: argocd
+# spec:
+#   project: default #leave this
+#   source:
+#     # repoURL: https://github.com/mohammedfuta2000/6Sense-project.git
+#     # targetRevision: HEAD #get the latest commit
+#     # path: argocd-application-config # to track a specific path in the repo
+#     repoURL: https://gitlab.com/nanuchi/argocd-app-config.git
+#     targetRevision: HEAD #get the latest commit
+#     path: dev # to track a specific path in the repo
+#   destination: 
+#     server: https://kubernetes.default.svc # leave this
+#     namespace: backend
+    
+
+
+#   syncPolicy:
+#     syncOptions:
+#     - CreateNamespace=true
+#     # automated configured argocd to poll the git repo every 3 mins. u can also configure a webhook if necessary
+#     automated:
+#       selfHeal: true
+#       prune: true

@@ -43,7 +43,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: myapp-service
+                name: myapp-service 
                 port:
                   name: https
   ingressClassName: nginx
