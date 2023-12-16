@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-deployment
+  namespace: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3-management-alpine
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: admin
+            - name: RABBITMQ_DEFAULT_PASS
+              value: admin-pass
+          volumeMounts:
+            - name: rabbitmq-data
+              mountPath: /var/lib/rabbitmq
+            - name: rabbitmq-log
+              mountPath: /var/log/rabbitmq
+      volumes:
+        - name: rabbitmq-data
+          hostPath:
+            path: /path/to/your/host/rabbitmq/data
+        - name: rabbitmq-log
+          hostPath:
+            path: /path/to/your/host/rabbitmq/log
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-service
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+  - name: rabbitmq-port
+    protocol: TCP
+    port: 5672
+    targetPort: 5672
+  - name: rabbitmq-management-port
+    protocol: TCP
+    port: 15672
+    targetPort: 15672
+
+---

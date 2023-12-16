@@ -22,13 +22,34 @@ Parameters:
     Type: String
     Default: '1'
   
-  # MongoDBAtlasServiceName:
-  #   Type: String
-  #   Default: com.amazonaws.vpce.us-east-1.vpce-svc-016347d830fe4cb13
-  #   Description: MongoDB Atlas ServiceName interface endpoint
+  MongoDBAtlasServiceName:
+    Type: String
+    Default: com.amazonaws.vpce.us-east-1.vpce-svc-016347d830fe4cb13
+    Description: MongoDB Atlas ServiceName interface endpoint
   # PrivateBucketName:
   #   Type: String
   #   Description: 'Name for the private S3 bucket, ensure this name is different from the last'
+
+  # for github actions
+  GitHubOrg:
+    Description: Name of GitHub organization/user (case sensitive)
+    Type: String
+  # RepositoryName:
+  #   Description: Name of GitHub repository (case sensitive)
+  #   Type: String
+  OIDCProviderArn:
+    Description: Arn for the GitHub OIDC Provider.
+    Default: ""
+    Type: String
+  OIDCAudience:
+    Description: Audience supplied to configure-aws-credentials.
+    Default: "sts.amazonaws.com"
+    Type: String
+
+Conditions:
+  CreateOIDCProvider: !Equals 
+    - !Ref OIDCProviderArn
+    - ""
 
 Mappings:
   ServicePrincipalPartitionMap:
@@ -313,7 +334,7 @@ Resources:
       SourceSecurityGroupId: !Ref ClusterSharedNodeSecurityGroup
       ToPort: 65535
 
-################################## EKS ########################
+  ################################## EKS ########################
   
   ServiceRole:
     Type: 'AWS::IAM::Role'
@@ -481,32 +502,70 @@ Resources:
 #               StringEquals:
 #                 aws:sourceVpce: !Ref VPC  
 
-# ######################Peer connection to MongoDB Atlas################################## 
-# # with private endpoint, Atlas does not require the your IP in its access list
-  # DBEndpointSecurityGroup:
-  #   Type: 'AWS::EC2::SecurityGroup'
-  #   Properties:
-  #     GroupDescription: Enable SSH access
-  #     VpcId: !Ref VPC
-  #     SecurityGroupIngress:
-  #       # - CidrIp: 0.0.0.0/0
-  #       - SourceSecurityGroupId: !Ref PrivateSecurityGroup
-  #         IpProtocol: '-1'
-  #     SecurityGroupEgress:
-  #       - CidrIp: 0.0.0.0/0
-  #         IpProtocol: '-1'    
-  # MongoDBAtlasVpcEndpoint:
-  #   Type: 'AWS::EC2::VPCEndpoint'
-  #   Properties:
-  #     VpcId: !Ref VPC
-  #     ServiceName: !Ref MongoDBAtlasServiceName
-  #     VpcEndpointType: Interface
-  #     SubnetIds: 
-  #         - !Ref PrivateSubnet1
-  #         - !Ref PrivateSubnet2
-  #         - !Ref PrivateSubnet3
-  #     SecurityGroupIds:
-  #         - !Ref DBEndpointSecurityGroup
+######################MongoDB Atlas Endpoint ################################## 
+# with private endpoint, Atlas does not require the your IP in its access list
+  DBEndpointSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable SSH access
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        # - CidrIp: 0.0.0.0/0
+        - SourceSecurityGroupId: !Ref PrivateSecurityGroup
+          IpProtocol: '-1'
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: '-1'    
+  MongoDBAtlasVpcEndpoint:
+    Type: 'AWS::EC2::VPCEndpoint'
+    Properties:
+      VpcId: !Ref VPC
+      ServiceName: !Ref MongoDBAtlasServiceName
+      VpcEndpointType: Interface
+      SubnetIds: 
+          - !Ref PrivateSubnet1
+          - !Ref PrivateSubnet2
+          - !Ref PrivateSubnet3
+      SecurityGroupIds:
+          - !Ref DBEndpointSecurityGroup
+
+###################### github actions role #############################
+  GitHubActionsRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Statement:
+            - Effect: Allow
+              Action: sts:AssumeRoleWithWebIdentity
+              Principal:
+                Federated: !If 
+                  - CreateOIDCProvider
+                  - !Ref GithubOidc
+                  - !Ref OIDCProviderArn
+              Condition:
+                StringEquals:
+                  token.actions.githubusercontent.com:aud: !Ref OIDCAudience
+                StringLike:
+                  token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/*:*
+        Policies:
+          - PolicyName: ECRFullAccessPolicy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - ecr:*
+                  Resource: '*'
+  GithubOidc:
+    Type: AWS::IAM::OIDCProvider
+    Condition: CreateOIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList: 
+        - sts.amazonaws.com
+      ThumbprintList:
+        - ffffffffffffffffffffffffffffffffffffffff
+
 
 Outputs:
   ARN:
@@ -533,7 +592,8 @@ Outputs:
   PrivateSubnet3Id:
     Description: "Private Subnet3 ID"
     Value: !Ref PrivateSubnet3
-  # MongoDBAtlasVpcEndpointId:
-  #   Description: "To be provided to MOngoDB Atlas"
-  #   Value: !Ref MongoDBAtlasVpcEndpoint
-  
+  MongoDBAtlasVpcEndpointId:
+    Description: "To be provided to MOngoDB Atlas"
+    Value: !Ref MongoDBAtlasVpcEndpoint
+  GitHubActionsRole:
+    Value: !GetAtt GitHubActionsRole.Arn 
