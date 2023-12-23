@@ -8,6 +8,7 @@ controller:
     requests:
       cpu: 100m
       memory: 90Mi
+  # uncomment hte below to enable proxy protocol
   # service:
   #   type: LoadBalancer
   #   annotations:

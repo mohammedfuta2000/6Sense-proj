@@ -8,10 +8,10 @@ Parameters:
   
   ClusterName:
     Type: String
-    Default: 6senseCluster
+    Default: sixsenseevbetastack
   InstanceTypes:
     Type: String
-    Default: t2.small
+    Default: t2.large
   DesiredSize:
     Type: String
     Default: '3'
@@ -29,27 +29,6 @@ Parameters:
   # PrivateBucketName:
   #   Type: String
   #   Description: 'Name for the private S3 bucket, ensure this name is different from the last'
-
-  # for github actions
-  GitHubOrg:
-    Description: Name of GitHub organization/user (case sensitive)
-    Type: String
-  # RepositoryName:
-  #   Description: Name of GitHub repository (case sensitive)
-  #   Type: String
-  OIDCProviderArn:
-    Description: Arn for the GitHub OIDC Provider.
-    Default: ""
-    Type: String
-  OIDCAudience:
-    Description: Audience supplied to configure-aws-credentials.
-    Default: "sts.amazonaws.com"
-    Type: String
-
-Conditions:
-  CreateOIDCProvider: !Equals 
-    - !Ref OIDCProviderArn
-    - ""
 
 Mappings:
   ServicePrincipalPartitionMap:
@@ -354,6 +333,7 @@ Resources:
       ManagedPolicyArns:
         - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonEKSClusterPolicy'
         - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonEKSVPCResourceController'
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/AmazonECS_FullAccess'
       Tags:
         - Key: Name
           Value: !Sub '${AWS::StackName}/ServiceRole'
@@ -511,7 +491,7 @@ Resources:
       VpcId: !Ref VPC
       SecurityGroupIngress:
         # - CidrIp: 0.0.0.0/0
-        - SourceSecurityGroupId: !Ref PrivateSecurityGroup
+        - SourceSecurityGroupId: !Ref ClusterSharedNodeSecurityGroup
           IpProtocol: '-1'
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
@@ -528,44 +508,6 @@ Resources:
           - !Ref PrivateSubnet3
       SecurityGroupIds:
           - !Ref DBEndpointSecurityGroup
-
-###################### github actions role #############################
-  GitHubActionsRole:
-      Type: AWS::IAM::Role
-      Properties:
-        AssumeRolePolicyDocument:
-          Statement:
-            - Effect: Allow
-              Action: sts:AssumeRoleWithWebIdentity
-              Principal:
-                Federated: !If 
-                  - CreateOIDCProvider
-                  - !Ref GithubOidc
-                  - !Ref OIDCProviderArn
-              Condition:
-                StringEquals:
-                  token.actions.githubusercontent.com:aud: !Ref OIDCAudience
-                StringLike:
-                  token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/*:*
-        Policies:
-          - PolicyName: ECRFullAccessPolicy
-            PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - ecr:*
-                  Resource: '*'
-  GithubOidc:
-    Type: AWS::IAM::OIDCProvider
-    Condition: CreateOIDCProvider
-    Properties:
-      Url: https://token.actions.githubusercontent.com
-      ClientIdList: 
-        - sts.amazonaws.com
-      ThumbprintList:
-        - ffffffffffffffffffffffffffffffffffffffff
-
 
 Outputs:
   ARN:
@@ -595,5 +537,3 @@ Outputs:
   MongoDBAtlasVpcEndpointId:
     Description: "To be provided to MOngoDB Atlas"
     Value: !Ref MongoDBAtlasVpcEndpoint
-  GitHubActionsRole:
-    Value: !GetAtt GitHubActionsRole.Arn 

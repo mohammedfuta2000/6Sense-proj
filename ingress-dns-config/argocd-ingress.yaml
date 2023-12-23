@@ -4,17 +4,17 @@ metadata:
   name: ingress-argocd
   namespace: argocd
   annotations:
-    cert-manager.io/issuer: letsencrypt-nginx
+    # cert-manager.io/issuer: letsencrypt-nginx
     # https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 spec:
-  tls:
-    - hosts:
-      - argocd.mohammedfuta2000.com
-      secretName: letsencrypt-nginx-quote
+  # tls:
+  #   - hosts:
+  #     - argocd.6senseev.com
+  #     secretName: letsencrypt-nginx-quote
   rules:  
-    - host: argocd.mohammedfuta2000.com
+    - host: argocd.6senseev.com
       http:
         paths:
           - path: /
