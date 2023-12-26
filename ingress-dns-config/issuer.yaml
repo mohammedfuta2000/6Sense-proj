@@ -1,8 +1,8 @@
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: letsencrypt-nginx
-  # name: letsencrypt-6senseev
+  # name: letsencrypt-nginx
+  name: letsencrypt-6senseev
   namespace: backend
 spec:
   # ACME issuer configuration

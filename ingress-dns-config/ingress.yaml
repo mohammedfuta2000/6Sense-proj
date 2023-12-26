@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-quote
+  name: 6sense-ingress
   namespace: backend
   # for ssl add this annotation
   annotations:
@@ -10,31 +10,31 @@ spec:
   # for ssl add this tls
   tls:
     - hosts: 
-      - quote.6senseev.com
+      # - quote.6senseev.com
       - beta-api.6senseev.com
       - beta-partner-api.6senseev.com
-      - accounting-service.6senseev.com
-      - session-service.6senseev.com
+      # - accounting-service.6senseev.com
+      # - session-service.6senseev.com
       - beta-socket.6senseev.com
       - beta-driver.6senseev.com
-      - ocpp-processor.6senseev.com
-      - octt-service.6senseev.com
+      # - ocpp-processor.6senseev.com
+      # - octt-service.6senseev.com
       - beta-admin.6senseev.com
       - beta-partner.6senseev.com
       - beta-ocpp.6senseev.com
 
       secretName: letsencrypt-nginx-private-key
   rules:
-    - host: quote.6senseev.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: quote
-                port:
-                  number: 80
+    # - host: quote.6senseev.com
+    #   http:
+    #     paths:
+    #       - path: /
+    #         pathType: Prefix
+    #         backend:
+    #           service:
+    #             name: quote
+    #             port:
+    #               number: 80    
     - host: beta-api.6senseev.com
       http:
         paths:
@@ -55,26 +55,26 @@ spec:
                 name: six-sense-ev-partnership-main-service
                 port:
                   number: 80
-    - host: accounting-service.6senseev.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: six-sense-ev-accounting-service
-                port:
-                  number: 80
-    - host: session-service.6senseev.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: six-sense-ev-session-service
-                port:
-                  number: 80
+    # - host: accounting-service.6senseev.com
+    #   http:
+    #     paths:
+    #       - path: /
+    #         pathType: Prefix
+    #         backend:
+    #           service:
+    #             name: six-sense-ev-accounting-service
+    #             port:
+    #               number: 80   
+    # - host: session-service.6senseev.com
+    #   http:
+    #     paths:
+    #       - path: /
+    #         pathType: Prefix
+    #         backend:
+    #           service:
+    #             name: six-sense-ev-session-service
+    #             port:
+    #               number: 80    
     - host: beta-socket.6senseev.com
       http:
         paths:
@@ -115,26 +115,26 @@ spec:
                 name: six-sense-ev-driver-app
                 port:
                   number: 80
-    - host: ocpp-processor.6senseev.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: six-sense-ev-ocpp-processor
-                port:
-                  number: 80
-    - host: octt-service.6senseev.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: six-sense-ev-octt-service
-                port:
-                  number: 80
+    # - host: ocpp-processor.6senseev.com
+    #   http:
+    #     paths:
+    #       - path: /
+    #         pathType: Prefix
+    #         backend:
+    #           service:
+    #             name: six-sense-ev-ocpp-processor
+    #             port:
+    #               number: 80
+    # - host: octt-service.6senseev.com
+    #   http:
+    #     paths:
+    #       - path: /
+    #         pathType: Prefix
+    #         backend:
+    #           service:
+    #             name: six-sense-ev-octt-service
+    #             port:
+    #               number: 80    
     - host: beta-partner.6senseev.com
       http:
         paths:
