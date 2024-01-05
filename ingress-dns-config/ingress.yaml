@@ -18,7 +18,7 @@ spec:
       - beta-socket.6senseev.com
       - beta-driver.6senseev.com
       # - ocpp-processor.6senseev.com
-      # - octt-service.6senseev.com
+      - beta-octt.6senseev.com
       - beta-admin.6senseev.com
       - beta-partner.6senseev.com
       - beta-ocpp.6senseev.com
@@ -98,13 +98,20 @@ spec:
     - host: beta-ocpp.6senseev.com
       http:
         paths:
+          # - path: /
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: six-sense-ev-ocpp-server
+          #       port:
+          #         number: 80  
           - path: /
             pathType: Prefix
             backend:
               service:
                 name: six-sense-ev-ocpp-server
                 port:
-                  number: 80    
+                  number: 5353  
     - host: beta-driver.6senseev.com
       http:
         paths:
@@ -125,16 +132,16 @@ spec:
     #             name: six-sense-ev-ocpp-processor
     #             port:
     #               number: 80
-    # - host: octt-service.6senseev.com
-    #   http:
-    #     paths:
-    #       - path: /
-    #         pathType: Prefix
-    #         backend:
-    #           service:
-    #             name: six-sense-ev-octt-service
-    #             port:
-    #               number: 80    
+    - host: beta-octt.6senseev.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: six-sense-ev-octt-service
+                port:
+                  number: 80    
     - host: beta-partner.6senseev.com
       http:
         paths:

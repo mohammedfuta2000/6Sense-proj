@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: 6sense-ev-partnership-client
+  name: 6sense-ev-ocpp-server
   namespace: argocd
 spec:
   destination:
@@ -10,7 +10,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   source:
     repoURL: 'git@github.com:6senseEV/k8s-deployments.git'
-    path: beta/6sense-ev-partnership-client
+    path: beta/6sense-ev-ocpp-server
     targetRevision: HEAD
   sources: []
   project: default
