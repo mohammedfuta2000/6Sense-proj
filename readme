@@ -1,2 +1,1 @@
-Description: Files used to Design and deploy Kubernetes environment for 6Senseev
-cloud platform: AWS
+Description: Files to Design and deploy cleints microservices application to AWS EKS environment
